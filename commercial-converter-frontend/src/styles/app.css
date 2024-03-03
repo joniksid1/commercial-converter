@@ -1,0 +1,131 @@
+.page {
+  font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  background-color: rgba(220, 220, 220, .3);
+  color: #504f4f;
+  position: relative;
+  min-width: 320px;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form__input-file {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.form__input-file-btn {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  font-size: 14px;
+  vertical-align: middle;
+  color: rgb(255 255 255);
+  text-align: center;
+  border-radius: 3px;
+  background-color: #419152;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border: none;
+  margin: 0;
+  transition: all .3s ease;
+}
+
+.form__input-file-text {
+  padding: 0 10px;
+  font-size: 14px;
+  display: inline-block;
+  transition: all .3s ease;
+}
+
+.form__input-file input[type=file] {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+/* :focus */
+.form__input-file input[type=file]:focus+.form__input-file-btn {
+  box-shadow: 0 0 0 0.02rem rgba(45, 45, 45, 0.25);
+}
+
+/* :hover */
+.form__input-file:hover .form__input-file-btn {
+  opacity: .8;
+}
+
+.form__input-file:hover .form__input-file-text {
+  opacity: .8;
+}
+
+/* :active */
+.form__input-file:active .form__input-file-btn {
+  background-color: #2E703A;
+}
+
+/* :disabled */
+.form__input-file input[type=file]:disabled+.form__input-file-btn {
+  background-color: #eee;
+}
+
+.form__button {
+  margin-top: 40px;
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #419152;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all .3s ease;
+}
+
+.form__button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form__button:hover {
+  opacity: .8;
+}
+
+.error {
+  color: #f00;
+  margin-top: 10px;
+}

@@ -1,0 +1,40 @@
+{
+  "name": "commercial-converter-api",
+  "version": "1.0.0",
+  "description": "Бэкенд формиратора ТКП",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint .",
+    "dev": "nodemon --inspect -- app.js",
+    "start": "node app.js"
+  },
+  "author": "Mikhail Kuznetsov",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "nodemon": "^3.0.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "celebrate": "^15.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.3",
+    "express-winston": "^4.2.0",
+    "form-data": "^4.0.0",
+    "joi": "^17.11.0",
+    "officeparser": "^4.0.8",
+    "pdf-extract": "^1.0.11",
+    "pdf-extract-rs": "^1.0.0",
+    "pdf-parse": "^1.1.1",
+    "pdf2csv": "^0.1.4",
+    "pdfdataextract": "^3.2.0",
+    "pdfix-sdk": "^7.3.2",
+    "winston": "^3.11.0"
+  }
+}
