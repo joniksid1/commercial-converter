@@ -22,7 +22,7 @@ function FileUploadForm() {
       const formData = new FormData();
       formData.append('pdfFile', file);
 
-      const response = await axios.post('http://localhost:3000/convert', formData, {
+      const response = await axios.post('https://api.mixer0000.nomoredomainsmonster.ru/convert', formData, {
         responseType: 'blob',
       });
 

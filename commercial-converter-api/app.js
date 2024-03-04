@@ -15,7 +15,7 @@ const {
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3001', 'http://localhost:5173'],
+  origin: ['http://localhost:3001', 'http://localhost:5173', 'https://api.mixer0000.nomoredomainsmonster.ru'],
   credentials: true,
   maxAge: 60,
 }));
