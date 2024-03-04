@@ -55,9 +55,7 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
       addHeader();
 
       // Добавляем данные для каждой системы
-      systems.forEach((system) => {
-        worksheet.getCell(`B${currentRow - 1}`).style = { alignment: { horizontal: 'center', vertical: 'middle' } };
-
+      systems.forEach((system, index) => {
         // Добавляем данные для элементов
         const addData = () => {
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
@@ -83,6 +81,11 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
         };
 
         addData();
+        // Устанавливаем стиль ячейки только над первой системой (костыль из-за бага exceljs)
+        // Баг проявляется при работе с объединёнными ячейками - плывут стили
+        if (index === 0) {
+          worksheet.getCell(`B${currentRow - 1}`).style = { alignment: { horizontal: 'center', vertical: 'middle' } };
+        }
       });
     });
 
