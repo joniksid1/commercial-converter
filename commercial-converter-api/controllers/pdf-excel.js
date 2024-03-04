@@ -1,5 +1,5 @@
 const { PdfData } = require('pdfdataextract');
-const ExcelJS = require('exceljs');
+const { getCommercialOffer } = require('./commercial-offer');
 
 // Метод для извлечения текста из PDF
 const extractTextFromPDF = async (pdfFileData) => {
@@ -24,36 +24,45 @@ const mergeLinesWithSHTRows = (lines) => {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
+    // Если строка начинается с цифры и содержит буквенный символ и два любых символа
     if (/^\d+\s[A-Za-zА-Яа-я]{1,}\S{2}/.test(line)) {
       if (buffer !== '') {
         mergedLines.push(buffer.trim());
         buffer = '';
       }
       buffer += line;
+      // Если строка содержит "Система", добавляем её в итоговый массив
+    } else if (line.includes('Система')) {
+      if (buffer !== '') {
+        mergedLines.push(buffer.trim());
+        buffer = '';
+      }
+      mergedLines.push(line.trim());
+      // Если строка содержит "ШТ", добавляем её в буфер
     } else if (line.includes('ШТ')) {
       buffer += ` ${line}`;
-    } else if (line.includes('Система')) {
-      mergedLines.push(line.trim()); // Добавляем строку с "Система" в итоговый массив
+      // Иначе добавляем строку в буфер
     } else {
-      buffer += `${line} `;
+      buffer += line;
     }
   }
 
+  // Если остался непустой буфер, добавляем его в итоговый массив
   if (buffer !== '') {
     mergedLines.push(buffer.trim());
   }
-
   return mergedLines;
 };
 
 // Функция для извлечения данных о системах из итогового массива
 const extractDataFromMergedLines = (mergedLines) => {
+  // Почему-то происходит СМЕЩЕНИЕ НА ОДНУ СИСТЕМУ НАЗАД (ВСТАВЛЯЕТСЯ ПЕРЕД ВИБРОИЗОЛЯТОРОМ)
+  let systemName;
   const systems = [];
 
   mergedLines.forEach((line) => {
     if (line.includes('Система')) {
-      const systemName = line.split(',')[0].trim(); // Получаем название системы
-      systems.push(systemName);
+      systemName = line.split(',')[0].trim(); // Получаем название системы
     }
 
     // Находим наименование и цену для каждой системы
@@ -72,6 +81,7 @@ const extractDataFromMergedLines = (mergedLines) => {
       const itemName = line.slice(itemNameStartIndex, itemNameEndIndex - 1).trim();
 
       systems.push({
+        systemName,
         orderNumber,
         itemName,
         quantity,
@@ -91,10 +101,6 @@ module.exports.pdfToXLSX = async (req, res, next) => {
     // Извлекаем текст из PDF
     const extractedText = await extractTextFromPDF(pdfFileData);
 
-    // Создаем новую книгу Excel
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Extracted Text');
-
     // Проверяем, является ли извлеченный текст массивом
     if (Array.isArray(extractedText)) {
       // Создаем массив для данных
@@ -107,34 +113,21 @@ module.exports.pdfToXLSX = async (req, res, next) => {
         const filteredLines = mergedLines.filter((line) => /^\d+\s[A-Za-zА-Яа-я]{1,}\S{2}/.test(line) || /^Система/.test(line));
         data.push(...filteredLines);
       });
-      // Вставляем данные в таблицу Excel
-      data.forEach((row) => {
-        worksheet.addRow([row]);
-      });
 
       // Извлекаем данные о системах из итогового массива
       const systemsData = extractDataFromMergedLines(data);
 
-      // Выводим данные о системах в консоль
-      console.log('Данные по системам:');
-      systemsData.forEach((system) => {
-        // Не работает сейчас, systemName нет у system, название лежит вне system
-        // Для такого элемента массива выводится undefind по всем свойствам
-        // console.log('Название системы:', system.systemName);
-        console.log('Наименование:', system.itemName);
-        console.log('Количество:', system.quantity);
-        console.log('Цена:', system.price);
-        console.log('---------------------');
-      });
+      // Вызываем функцию для создания заполненного файла Excel
+      const commercial = await getCommercialOffer(req, res, next, systemsData);
+
+      // Генерируем и отправляем XLSX файл обратно клиенту
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="extracted_text.xlsx"');
+      res.write(commercial, 'binary');
+      res.end();
     } else {
       throw new Error('Извлеченный текст не является массивом');
     }
-
-    // Генерируем и отправляем XLSX файл обратно клиенту
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="extracted_text.xlsx"');
-    await workbook.xlsx.write(res);
-    res.end();
   } catch (e) {
     next(e);
   }
