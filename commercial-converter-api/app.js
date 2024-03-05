@@ -2,11 +2,11 @@ const express = require('express');
 require('dotenv').config();
 const { errors } = require('celebrate');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const { router } = require('./routes/root');
 const { NotFoundError } = require('./utils/errors/not-found-error');
 const error = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const fileUpload = require('express-fileupload');
 
 const {
   PORT = '3000',

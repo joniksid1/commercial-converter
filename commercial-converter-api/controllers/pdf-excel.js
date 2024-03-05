@@ -1,6 +1,11 @@
 const { getCommercialOffer } = require('../middlewares/commercial-offer');
 
-const { extractTextFromPDF, mergeBrokenLines, extractDataFromMergedLines } = require('../utils/format-text');
+const {
+  extractTextFromPDF,
+  mergeBrokenLines,
+  extractDataFromMergedLines,
+  checkFileValidity,
+} = require('../utils/format-text');
 
 // POST запрос для извлечения текста из PDF и сохранения в XLSX
 module.exports.pdfToXLSX = async (req, res, next) => {
@@ -14,6 +19,12 @@ module.exports.pdfToXLSX = async (req, res, next) => {
     if (Array.isArray(extractedText)) {
       // Создаем массив для данных
       const data = [];
+
+      const validate = checkFileValidity(extractedText);
+
+      if (!validate) {
+        throw new Error('Файл не соответствует необходимому шаблону КП');
+      }
 
       // Итерируем по массиву и фильтруем нужные строки
       extractedText.forEach((pageText) => {

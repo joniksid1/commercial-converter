@@ -9,8 +9,16 @@ function FileUploadForm() {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-    setFileName(selectedFile.name);
+    if (selectedFile && selectedFile.name.endsWith('.pdf')) {
+      setError(null);
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    } else {
+      // Обработка случая, когда выбран неверный файл
+      setError('Пожалуйста, выберите файл в формате PDF');
+      setFile(null);
+      setFileName('');
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -26,6 +34,10 @@ function FileUploadForm() {
         responseType: 'blob',
       });
 
+      // const response = await axios.post('http://localhost:3000/convert', formData, {
+      //   responseType: 'blob',
+      // });
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -35,7 +47,20 @@ function FileUploadForm() {
 
       setIsLoading(false);
     } catch (error) {
-      setError('Ошибка загрузки. Попробуйте ещё раз.');
+      if (error.response) {
+        const blobText = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsText(error.response.data);
+        });
+
+        const errorMessage = JSON.parse(blobText).message;
+        console.log('Сообщение от сервера:', errorMessage);
+        setError(errorMessage || 'Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз или обратитесь к администратору..');
+      } else {
+        console.log('Произошла ошибка:', error.message);
+        setError('Произошла ошибка при запросе на сервер. Пожалуйста, попробуйте ещё раз или обратитесь к администратору.');
+      }
       setIsLoading(false);
     }
   };

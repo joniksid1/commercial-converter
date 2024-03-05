@@ -58,17 +58,22 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
       systems.forEach((system, index) => {
         // Добавляем данные для элементов
         const addData = () => {
+          let { price } = system;
+          if (price !== null && !Number.isNaN(price)) {
+            price = parseFloat(price.replace(/\s/g, '').replace(',', '.'));
+          }
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
           worksheet.getCell(`B${currentRow + 1}`).value = system.itemName;
-          worksheet.getCell(`H${currentRow + 1}`).value = system.price;
           worksheet.getCell(`H${currentRow + 1}`).numFmt = '#,##0.00';
+          worksheet.getCell(`H${currentRow + 1}`).value = price;
           worksheet.getCell(`I${currentRow + 1}`).value = 0;
           worksheet.getCell(`I${currentRow + 1}`).numFmt = '#,#0.0%';
           worksheet.getCell(`L${currentRow + 1}`).value = {
             formula: `H${currentRow + 1}*(1-I${currentRow + 1})`,
             result: (system.price),
           };
-          worksheet.getCell(`M${currentRow + 1}`).value = system.quantity;
+          worksheet.getCell(`M${currentRow + 1}`).value = parseInt(system.quantity, 10);
+          worksheet.getCell(`M${currentRow + 1}`).style.font = { name: 'Arial', size: 11, color: { argb: '0000FF' } };
           worksheet.getCell(`P${currentRow + 1}`).value = {
             formula: `L${currentRow + 1}*M${currentRow + 1}`,
             result: (system.price),
@@ -106,15 +111,15 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
     return fileContent;
   } catch (e) {
     next(e);
+    return null;
   } finally {
     // Удаляем временный файл
     try {
       if (outputPath) {
         await fs.unlink(outputPath);
-        console.log('Файл успешно удален');
       }
     } catch (unlinkError) {
-      console.error('Ошибка удаления файла:', unlinkError);
+      next(unlinkError);
     }
   }
 };

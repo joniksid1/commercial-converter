@@ -90,8 +90,14 @@ const extractDataFromMergedLines = (mergedLines) => {
   return systems;
 };
 
+const checkFileValidity = (text) => {
+  const keywords = ['Условия оплаты', 'airone'];
+  return keywords.every((keyword) => text.some((line) => line.includes(keyword)));
+};
+
 module.exports = {
   extractTextFromPDF,
   mergeBrokenLines,
   extractDataFromMergedLines,
+  checkFileValidity,
 };
