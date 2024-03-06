@@ -58,8 +58,6 @@ const extractDataFromMergedLines = (mergedLines) => {
   const systems = [];
 
   mergedLines.forEach((line) => {
-    // Вытаскиваем возможные названия систем
-    // const systemNameMatch = line.match(/(?:Система|ПД\d+|ВД\d+|ППК|ПДУ|ВДУ).+/);
     const systemNameMatch = line.match(/Система.+/);
     if (systemNameMatch) {
       systemName = systemNameMatch[0].trim();

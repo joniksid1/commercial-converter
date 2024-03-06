@@ -62,7 +62,65 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
             price = parseFloat(price.replace(/\s/g, '').replace(',', '.'));
           }
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
-          worksheet.getCell(`B${currentRow + 1}`).value = system.itemName;
+          // Функция, которая форматирует текст и возвращает его в формате rich text
+          const formatText = (text) => {
+            // Проверяем, есть ли пробел в строке
+            const hasSpace = /\s/.test(text);
+
+            // Если пробел есть, то ищем последнее слово
+            if (hasSpace) {
+              // Регулярное выражение для поиска последнего слова в тексте
+              const lastWordRegex = /[^\s]+$/;
+              const lastWordMatch = text.match(lastWordRegex);
+
+              // Если найдено последнее слово, выделить его
+              if (lastWordMatch) {
+                const lastWord = lastWordMatch[0];
+                const lastIndex = text.lastIndexOf(lastWord);
+                const plainTextBeforeLastWord = text.substring(0, lastIndex);
+                const plainTextAfterLastWord = text.substring(lastIndex + lastWord.length);
+
+                // Проверка, является ли последнее слово "А" или "резинового"
+                if (lastWord !== 'А'
+                && lastWord !== 'резинового'
+                && lastWord !== 'IP54'
+                && lastWord !== 'IP65'
+                ) {
+                  // Форматирование текста: первая часть без выделения, последнее слово - выделено
+                  const formattedText = [
+                    { text: plainTextBeforeLastWord, font: { name: 'Arial', size: 11, bold: false } },
+                    { text: lastWord, font: { name: 'Arial', size: 11, bold: true } },
+                    { text: plainTextAfterLastWord, font: { name: 'Arial', size: 11, bold: false } },
+                  ];
+
+                  const cellValue = {
+                    richText: formattedText.map(({ text: itemText, font }) => ({
+                      text: itemText,
+                      font: {
+                        ...font,
+                        bold: font.bold,
+                      },
+                    })),
+                  };
+
+                  return cellValue;
+                }
+              }
+            } else {
+              // Если пробела нет, вернуть единственное слово жирным
+              return {
+                richText: [{ text, font: { name: 'Arial', size: 11, bold: true } }],
+              };
+            }
+
+            // Иначе вернуть весь текст без выделения
+            return {
+              richText: [{ text, font: { name: 'Arial', size: 11, bold: false } }],
+            };
+          };
+
+          const formattedText = formatText(system.itemName);
+          worksheet.getCell(`B${currentRow + 1}`).value = formattedText;
           worksheet.getCell(`H${currentRow + 1}`).numFmt = '#,##0.00';
           worksheet.getCell(`H${currentRow + 1}`).value = price;
           worksheet.getCell(`I${currentRow + 1}`).value = 0;
