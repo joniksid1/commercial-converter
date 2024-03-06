@@ -58,8 +58,11 @@ const extractDataFromMergedLines = (mergedLines) => {
   const systems = [];
 
   mergedLines.forEach((line) => {
-    if (line.includes('Система')) {
-      systemName = line.split(',')[0].trim(); // Получаем название системы
+    // Вытаскиваем возможные названия систем
+    // const systemNameMatch = line.match(/(?:Система|ПД\d+|ВД\d+|ППК|ПДУ|ВДУ).+/);
+    const systemNameMatch = line.match(/Система.+/);
+    if (systemNameMatch) {
+      systemName = systemNameMatch[0].trim();
     }
 
     // Находим наименование и цену для каждой системы

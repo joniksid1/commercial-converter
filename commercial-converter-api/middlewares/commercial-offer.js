@@ -36,14 +36,13 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
 
       const addHeader = () => {
         currentRow += 2;
-
         worksheet.mergeCells(`B${currentRow}:E${currentRow}`);
-        worksheet.getCell(`A${currentRow}`).value = {
-          richText: [
-            { text: `${groupNumber}`, font: { name: 'Arial', size: 11, bold: true } },
-          ],
-        };
-        worksheet.getCell(`A${currentRow}`).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        const cellA = worksheet.getCell(`A${currentRow}`);
+        cellA.value = parseInt(groupNumber, 10);
+        cellA.alignment = { vertical: 'middle', horizontal: 'center' };
+        cellA.font = { name: 'Arial', size: 11, bold: true };
+
         worksheet.getCell(`B${currentRow}`).value = {
           richText: [
             { text: `${systemName}`, font: { name: 'Arial', size: 11, bold: true } },
