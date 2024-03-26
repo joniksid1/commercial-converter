@@ -1,3 +1,19 @@
+.drag-over-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(117, 245, 117, 0.3);
+  pointer-events: none; /* Не препятствует взаимодействию с элементами страницы */
+  z-index: 9998; /* Чтобы тень была под другими элементами */
+  display: none;
+}
+
+.drag-over-overlay.visible {
+  display: block;
+}
+
 .page {
   font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
   -moz-osx-font-smoothing: grayscale;
