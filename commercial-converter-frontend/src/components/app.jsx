@@ -67,7 +67,12 @@ function FileUploadForm() {
       const formData = new FormData();
       formData.append('pdfFile', file);
 
-      const response = await axios.post('https://api.mixer0000.nomoredomainsmonster.ru/convert', formData, {
+      // Старый адрес на ВМ Яндекс клауд
+      // const response = await axios.post('https://api.mixer0000.nomoredomainsmonster.ru/convert', formData, {
+      //   responseType: 'blob',
+      // });
+
+      const response = await axios.post('http://formatter/api/convert', formData, {
         responseType: 'blob',
       });
 
