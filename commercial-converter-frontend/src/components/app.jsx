@@ -71,8 +71,9 @@ function FileUploadForm() {
       // const response = await axios.post('https://api.mixer0000.nomoredomainsmonster.ru/convert', formData, {
       //   responseType: 'blob',
       // });
+      // Будет http://formatter , но ещё не настроил проксирование с него
 
-      const response = await axios.post('http://formatter/api/convert', formData, {
+      const response = await axios.post('http://192.168.97.110/api/convert', formData, {
         responseType: 'blob',
       });
 
