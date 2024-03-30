@@ -16,7 +16,8 @@ const app = express();
 
 app.use(cors({
   origin: ['http://localhost:3001', 'http://localhost:5173', 'https://mixer0000.nomoredomainsmonster.ru',
-    'http://formatter', 'https://formatter', 'http://formatter/api', 'https://formatter/api', 'http://192.168.97.110'],
+    'http://formatter', 'https://formatter', 'http://formatter/api', 'https://formatter/api', 'http://192.168.97.110',
+    'http://192.168.97.110:8080'],
   credentials: true,
   maxAge: 60,
 }));

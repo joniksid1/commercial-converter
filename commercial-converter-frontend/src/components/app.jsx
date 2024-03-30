@@ -73,7 +73,7 @@ function FileUploadForm() {
       // });
       // Будет http://formatter , но ещё не настроил проксирование с него
 
-      const response = await axios.post('http://192.168.97.110/api/convert', formData, {
+      const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
         responseType: 'blob',
       });
 
