@@ -9,13 +9,14 @@ const error = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const {
-  PORT = '3000',
+  PORT = '8000',
 } = process.env;
 
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:3001', 'http://localhost:5173', 'https://mixer0000.nomoredomainsmonster.ru'],
+  origin: ['http://localhost:3001', 'http://localhost:5173', 'https://mixer0000.nomoredomainsmonster.ru',
+    'http://formatter', 'https://formatter', 'http://formatter/api', 'https://formatter/api'],
   credentials: true,
   maxAge: 60,
 }));
@@ -27,7 +28,7 @@ app.use(requestLogger);
 
 app.use(fileUpload());
 
-app.use('/', router);
+app.use('/api', router);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError({ message: 'Страница не найдена' }));
