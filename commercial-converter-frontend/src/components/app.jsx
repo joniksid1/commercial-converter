@@ -67,11 +67,10 @@ function FileUploadForm() {
       const formData = new FormData();
       formData.append('pdfFile', file);
 
-      // Старый адрес на ВМ Яндекс клауд
-      // const response = await axios.post('https://api.mixer0000.nomoredomainsmonster.ru/convert', formData, {
+      // Для локального теста
+      // const response = await axios.post('http://localhost:3000/api/convert', formData, {
       //   responseType: 'blob',
       // });
-      // Будет http://formatter , но ещё не настроил проксирование с него
 
       const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
         responseType: 'blob',
@@ -86,27 +85,28 @@ function FileUploadForm() {
 
       setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       if (error.response) {
-        const blobText = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.readAsText(error.response.data);
-        });
-
-        const errorMessage = JSON.parse(blobText).message;
-        console.log('Сообщение от сервера:', errorMessage);
-        setError(errorMessage || 'Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз или обратитесь к администратору.');
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          try {
+            const errorMessage = JSON.parse(reader.result).message;
+            setError(errorMessage || 'Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз или обратитесь к администратору.');
+          } catch {
+            setError('Ошибка сервера, попробуйте ещё раз.');
+          }
+        };
+        reader.readAsText(error.response.data);
       } else {
         console.log('Произошла ошибка:', error.message);
         setError('Произошла ошибка при запросе на сервер. Пожалуйста, попробуйте ещё раз или обратитесь к администратору.');
       }
-      setIsLoading(false);
     }
   };
 
   return (
     <main className={`main ${dragOver ? 'drag-over' : ''}`}>
-      <div className={`drag-over-overlay ${dragOver ? 'visible' : ''}`}></div> {/* Элемент с зелёной тенью */}
+      <div className={`drag-over-overlay ${dragOver ? 'visible' : ''}`}></div>
       <h2 className='main__header'>Загрузите или перетащите PDF файл</h2>
       {error && <div className='error'>{error}</div>}
       <form className='form' method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
@@ -121,7 +121,6 @@ function FileUploadForm() {
       </form>
     </main>
   );
-
 }
 
 export default FileUploadForm;
