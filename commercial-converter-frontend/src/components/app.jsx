@@ -89,12 +89,23 @@ function FileUploadForm() {
       if (error.response) {
         const reader = new FileReader();
         reader.onloadend = () => {
-          try {
-            const errorMessage = JSON.parse(reader.result).message;
-            setError(errorMessage || 'Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз или обратитесь к администратору.');
-          } catch {
-            setError('Ошибка сервера, попробуйте ещё раз.');
+          const contentType = error.response.headers['content-type'];
+          if (contentType && contentType.includes('text/html')) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(reader.result, 'text/html');
+            const message = doc.querySelector('h1') ? doc.querySelector('h1').textContent : 'Неизвестная ошибка';
+            setError(`Ошибка сервера: ${message}`);
+          } else {
+            try {
+              const errorMessage = JSON.parse(reader.result).message;
+              setError(errorMessage || 'Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз или обратитесь к администратору.');
+            } catch {
+              setError('Ошибка сервера, попробуйте ещё раз.');
+            }
           }
+        };
+        reader.onerror = () => {
+          setError('Ошибка чтения ответа сервера.');
         };
         reader.readAsText(error.response.data);
       } else {
