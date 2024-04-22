@@ -8,7 +8,7 @@ function formatSystemName(originalName) {
     const volumeInM3 = parseFloat(volume.replace(',', '.')) * 1000;
     // Округляем давление, если есть дробная часть
     const roundedPressure = Math.round(parseFloat(pressure.replace(',', '.')));
-    return `(L=${volumeInM3} м3/час; P=${roundedPressure} Па)`;
+    return `(L=${volumeInM3} м3/час; Рс=${roundedPressure} Па)`;
   });
 
   return formattedName;
