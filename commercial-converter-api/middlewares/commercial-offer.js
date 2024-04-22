@@ -2,6 +2,7 @@ const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs').promises;
 const crypto = require('crypto');
+const { formatSystemName } = require('../utils/format-system-name');
 
 module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
   const templatePath = path.join(__dirname, '../template/commercial-offer.xlsx');
@@ -32,6 +33,9 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
     // Итерируем по группам систем и вставляем данные
     Object.keys(groupedSystems).forEach((systemName) => {
       const systems = groupedSystems[systemName];
+
+      const formattedTitle = formatSystemName(systemName);
+
       groupNumber += 1;
 
       const addHeader = () => {
@@ -45,7 +49,7 @@ module.exports.getCommercialOffer = async (req, res, next, systemsData) => {
 
         worksheet.getCell(`B${currentRow}`).value = {
           richText: [
-            { text: `${systemName}`, font: { name: 'Arial', size: 11, bold: true } },
+            { text: `${formattedTitle}`, font: { name: 'Arial', size: 11, bold: true } },
           ],
         };
         worksheet.getRow(currentRow).height = 47;
