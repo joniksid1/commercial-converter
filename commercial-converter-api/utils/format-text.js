@@ -70,8 +70,8 @@ const extractDataFromMergedLines = (mergedLines) => {
       const orderNumber = orderNumberMatch ? orderNumberMatch[0] : null;
       const quantityMatch = line.match(/(\d+)\sШТ/);
       const quantity = quantityMatch ? quantityMatch[1] : null;
-      const priceMatch = line.match(/ШТ\s(\d+\s\d+,\d+)/) || line.match(/ШТ\s(\d+,\d+)/);
-      const price = priceMatch ? priceMatch[1] : null;
+      const priceMatch = line.match(/ШТ\s([\d\s]*\d+,\d+)/);
+      const price = priceMatch ? priceMatch[1].replace(/\s/g, '') : null;
 
       // Находим позицию начала и конца строки с наименованием
       const itemNameStartIndex = line.indexOf(orderNumber) + orderNumber.length;
