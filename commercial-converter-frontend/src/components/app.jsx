@@ -47,12 +47,12 @@ function FileUploadForm() {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    if (selectedFile && selectedFile.name.endsWith('.pdf')) {
+    if (selectedFile && (selectedFile.name.endsWith('.pdf') || selectedFile.name.endsWith('.xlsx'))) {
       setError(null);
       setFile(selectedFile);
       setFileName(selectedFile.name);
     } else {
-      setError('Пожалуйста, выберите файл в формате PDF');
+      setError('Пожалуйста, выберите файл в формате PDF или XLSX');
       setFile(null);
       setFileName('');
     }
@@ -65,7 +65,7 @@ function FileUploadForm() {
 
     try {
       const formData = new FormData();
-      formData.append('pdfFile', file);
+      formData.append('file', file);
 
       // Для локального теста
       // const response = await axios.post('http://localhost:3000/api/convert', formData, {
@@ -118,12 +118,12 @@ function FileUploadForm() {
   return (
     <main className={`main ${dragOver ? 'drag-over' : ''}`}>
       <div className={`drag-over-overlay ${dragOver ? 'visible' : ''}`}></div>
-      <h2 className='main__header'>Загрузите или перетащите PDF файл</h2>
+      <h2 className='main__header'>Загрузите / перетащите PDF (AirOne) или XLSX (VRF) файл</h2>
       {error && <div className='error'>{error}</div>}
       <form className='form' method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
         <label className='form__input-file'>
-          <input type="file" name="file" accept=".pdf" onChange={handleFileChange} />
-          <span className='form__input-file-btn'>Загрузить PDF файл</span>
+          <input type="file" name="file" accept=".pdf, .xlsx" onChange={handleFileChange} />
+          <span className='form__input-file-btn'>Загрузить PDF / XLSX файл</span>
           <span className='form__input-file-text'>{fileName ? fileName : 'Максимум 10 МБ'}</span>
         </label>
         <button className='form__button' type="submit" disabled={!file || isLoading}>
