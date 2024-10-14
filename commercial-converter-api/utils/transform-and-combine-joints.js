@@ -3,13 +3,13 @@ function transformAndCombineJoints(systemData) {
   // Функция для преобразования моделей по заданным правилам
   function transformModel(modelName) {
     if (modelName === 'HFQ-102F') {
-      return 'Y-1S';
+      return 'Y-1SL';
     } if (['HFQ-162F', 'HFQ-242F'].includes(modelName)) {
-      return 'Y-2S';
+      return 'Y-2SL';
     } if (['HFQ-302F', 'HFQ-462F'].includes(modelName)) {
-      return 'Y-3S';
+      return 'Y-3SL';
     } if (modelName === 'HFQ-682F') {
-      return 'Y-4';
+      return 'Y-4S';
     } if (['HFQ-M32F', 'HFQ-M462F', 'HFQ-M682F'].includes(modelName)) {
       return 'ML-01S';
     }
