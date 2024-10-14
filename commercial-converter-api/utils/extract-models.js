@@ -19,7 +19,7 @@ async function extractModelsFromExcel(fileBuffer) {
       const companyCell = row.getCell(2); // Столбец B (2)
 
       // Проверяем наличие значения в столбце B
-      if (companyCell.value && companyCell.value.toString() === ('Hisense' || 'Royal Clima')) {
+      if (companyCell.value && companyCell.value.toString() === ('Hisense' || 'ROYAL CLIMA')) {
         isValidFile = true; // Файл валиден
       }
 

@@ -23,12 +23,12 @@ function FileUploadForm() {
       event.preventDefault();
       setDragOver(false);
       const droppedFile = event.dataTransfer.files[0];
-      if (droppedFile && droppedFile.name.endsWith('.pdf')) {
+      if (droppedFile && (droppedFile.name.endsWith('.pdf') || droppedFile.name.endsWith('.xlsx'))) {
         setError(null);
         setFile(droppedFile);
         setFileName(droppedFile.name);
       } else {
-        setError('Пожалуйста, перетащите файл в формате PDF');
+        setError('Пожалуйста, перетащите файл в формате PDF или XLSX');
         setFile(null);
         setFileName('');
       }
