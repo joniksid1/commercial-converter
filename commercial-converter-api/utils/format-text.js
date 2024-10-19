@@ -1,4 +1,13 @@
 const { PdfData } = require('pdfdataextract');
+const {
+  SYSTEM_DATA_REGEX,
+  SYSTEM_NAME_REGEX,
+  ORDER_NUMBER_REGEX,
+  QUANTITY_REGEX,
+  PRICE_REGEX,
+  WORK_DAYS_REGEX,
+  VALIDITY_KEYWORDS,
+} = require('./constants');
 
 const extractTextFromPDF = async (pdfFileData) => {
   try {
@@ -23,7 +32,7 @@ const mergeBrokenLines = (lines) => {
     const line = lines[i];
 
     // Если строка начинается с цифры и содержит буквенный символ и два любых символа
-    if (/^\d+\s[A-Za-zА-Яа-я]{1,}\S{2}/.test(line) && !line.includes('рабочих дней')) {
+    if (SYSTEM_DATA_REGEX.test(line) && !WORK_DAYS_REGEX.test(line)) {
       if (buffer !== '') {
         mergedLines.push(buffer.trim());
         buffer = '';
@@ -58,24 +67,24 @@ const extractDataFromMergedLines = (mergedLines) => {
   const systems = [];
 
   mergedLines.forEach((line) => {
-    const systemNameMatch = line.match(/Система.+/);
+    const systemNameMatch = line.match(SYSTEM_NAME_REGEX);
     if (systemNameMatch) {
       systemName = systemNameMatch[0].trim();
     }
 
     // Находим наименование и цену для каждой системы
-    const match = line.match(/^\d+\s[A-Za-zА-Яа-я]{1,}\S{2}/);
+    const match = line.match(SYSTEM_DATA_REGEX);
     if (match) {
-      const orderNumberMatch = line.match(/^\d+/);
+      const orderNumberMatch = line.match(ORDER_NUMBER_REGEX);
       const orderNumber = orderNumberMatch ? orderNumberMatch[0] : null;
-      const quantityMatch = line.match(/(\d+)\sШТ/);
+      const quantityMatch = line.match(QUANTITY_REGEX);
       const quantity = quantityMatch ? quantityMatch[1] : null;
-      const priceMatch = line.match(/ШТ\s([\d\s]*\d+,\d+)/);
+      const priceMatch = line.match(PRICE_REGEX);
       const price = priceMatch ? priceMatch[1].replace(/\s/g, '') : null;
 
       // Находим позицию начала и конца строки с наименованием
       const itemNameStartIndex = line.indexOf(orderNumber) + orderNumber.length;
-      const itemNameEndIndex = line.search(/(\d+)\sШТ/);
+      const itemNameEndIndex = line.search(QUANTITY_REGEX);
       const itemName = line.slice(itemNameStartIndex, itemNameEndIndex - 1).trim();
 
       systems.push({
@@ -92,8 +101,7 @@ const extractDataFromMergedLines = (mergedLines) => {
 };
 
 const checkFileValidity = (text) => {
-  const keywords = ['Условия оплаты', 'airone'];
-  return keywords.every((keyword) => text.some((line) => line.includes(keyword)));
+  return VALIDITY_KEYWORDS.every((keyword) => text.some((line) => line.includes(keyword)));
 };
 
 module.exports = {

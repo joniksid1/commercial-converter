@@ -1,7 +1,9 @@
 const ExcelJS = require('exceljs');
+const { FORBIDDEN_PREFIXES } = require('./models');
+const { FIND_MODELS_REGEX } = require('./constants');
 
-// Регулярное выражение для поиска маркировок (латиница, цифры и тире/буквы в конце)
-const pattern = /[A-Z]{2,}-[A-Za-z0-9]*/g;
+// Функция для проверки, начинается ли модель с одного из запрещённых префиксов
+const isForbiddenModel = (model) => FORBIDDEN_PREFIXES.some((prefix) => model.startsWith(prefix));
 
 // Функция для чтения данных из загруженного Excel файла (из буфера)
 async function extractModelsFromExcel(fileBuffer) {
@@ -28,13 +30,16 @@ async function extractModelsFromExcel(fileBuffer) {
       const quantityValue = quantityCell.value ? quantityCell.value.toString() : 'N/A'; // Если пусто, то 'N/A'
 
       if (modelValue) { // Проверяем, что модель не пустая
-        const matches = modelValue.match(pattern);
+        const matches = modelValue.match(FIND_MODELS_REGEX);
         if (matches) {
           matches.forEach((match) => {
-            models.push({
-              model: match,
-              quantity: quantityValue,
-            });
+            // Проверяем, является ли модель запрещённой
+            if (!isForbiddenModel(match)) {
+              models.push({
+                model: match,
+                quantity: quantityValue,
+              });
+            }
           });
         }
       }

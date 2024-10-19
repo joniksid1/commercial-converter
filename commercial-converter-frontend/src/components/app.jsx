@@ -16,7 +16,10 @@ function FileUploadForm() {
 
     const handleDocumentDragLeave = (event) => {
       event.preventDefault();
-      setDragOver(false);
+      // Проверяем, что курсор покинул окно
+      if (event.clientX === 0 && event.clientY === 0) {
+        setDragOver(false);
+      }
     };
 
     const handleDocumentDrop = (event) => {

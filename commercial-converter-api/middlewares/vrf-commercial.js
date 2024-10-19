@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const crypto = require('crypto');
 const { fetchDataQueries } = require('../utils/database-query-service');
 const { getSystemNameWithModelType } = require('../utils/format-system-name');
+const { AVC_AVBC_REGEX, MODELS_REGEX } = require('../utils/constants');
 
 module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
   const templatePath = path.join(__dirname, '../template/commercial-offer.xlsx');
@@ -58,10 +59,10 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
       models.forEach((modelData) => {
         const { model, quantity, priceData } = modelData;
 
-        // Если данных о модели нет, выводим сообщение
+        // Если данных о модели нет, выводим сообщение с количеством
         if (!priceData) {
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
-          worksheet.getCell(`B${currentRow + 1}`).value = `Данные о модели "${model}" не найдены.`;
+          worksheet.getCell(`B${currentRow + 1}`).value = `Данные о модели "${model}" не найдены. Количество: ${quantity}`;
           worksheet.getCell(`B${currentRow + 1}`).font = {
             name: 'Arial', size: 11, italic: true, color: { argb: 'FF0000' },
           };
@@ -142,6 +143,16 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         });
 
         worksheet.getCell(`B${currentRow}`).alignment = { vertical: 'middle', wrapText: true };
+
+        // Устанавливаем высоту строки в зависимости от модели
+        if (AVC_AVBC_REGEX.test(model)) {
+          worksheet.getRow(currentRow + 1).height = 52;
+        } else if (MODELS_REGEX.test(model)) {
+          worksheet.getRow(currentRow + 1).height = 39;
+        } else {
+          // Оставляем стандартную высоту строки
+          worksheet.getRow(currentRow + 1).height = 23;
+        }
         currentRow += 1;
       });
     });
