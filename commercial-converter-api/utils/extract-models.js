@@ -1,9 +1,12 @@
 const ExcelJS = require('exceljs');
-const { FORBIDDEN_PREFIXES } = require('./models');
+const { FORBIDDEN_PREFIXES, MODELS_WITH_QUANTITY_MULTIPLICATION } = require('./models');
 const { FIND_MODELS_REGEX } = require('./constants');
 
 // Функция для проверки, начинается ли модель с одного из запрещённых префиксов
 const isForbiddenModel = (model) => FORBIDDEN_PREFIXES.some((prefix) => model.startsWith(prefix));
+
+// Функция для проверки, нужно ли умножать количество
+const shouldMultiplyQuantity = (model) => MODELS_WITH_QUANTITY_MULTIPLICATION.includes(model);
 
 // Функция для чтения данных из загруженного Excel файла (из буфера)
 async function extractModelsFromExcel(fileBuffer) {
@@ -29,15 +32,21 @@ async function extractModelsFromExcel(fileBuffer) {
       const modelValue = modelCell.value ? modelCell.value.toString() : '';
       const quantityValue = quantityCell.value ? quantityCell.value.toString() : 'N/A'; // Если пусто, то 'N/A'
 
-      if (modelValue) { // Проверяем, что модель не пустая
+      if (modelValue) {
         const matches = modelValue.match(FIND_MODELS_REGEX);
         if (matches) {
           matches.forEach((match) => {
-            // Проверяем, является ли модель запрещённой
             if (!isForbiddenModel(match)) {
+              let finalQuantity = quantityValue;
+
+              // Проверка на умножение количества
+              if (shouldMultiplyQuantity(match)) {
+                finalQuantity = quantityValue * 2;
+              }
+
               models.push({
                 model: match,
-                quantity: quantityValue,
+                quantity: finalQuantity,
               });
             }
           });

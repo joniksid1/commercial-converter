@@ -9,7 +9,25 @@ const REFNET_MODEL_TRANSFORMATIONS = {
   'HFQ-M32F': 'ML-01S',
   'HFQ-M462F': 'ML-01S',
   'HFQ-M682F': 'ML-01S',
+  'HFQ-M142F': 'Y-1SL',
+  'HFQ-M282F': 'Y-1SL',
+  'HFQ-M452F': 'Y-2SL',
+  'HFQ-M562F': 'Y-2SL',
+  'HFQ-M692F': 'Y-3SL',
+  'HFQ-M902F': 'Y-3SL',
+  'HFQ-462XF': 'Y-4S',
+  'HFQ-682XF': 'Y-4S',
+  'HFQ-M202F': 'ML-01S',
+  'HFQ-M212F': 'ML-01S',
+  'HFQ-M302F': 'ML-01S',
 };
+
+// Определение моделей, которые требуют удвоения количества
+const MODELS_WITH_QUANTITY_MULTIPLICATION = [
+  'HFQ-M142F', 'HFQ-M282F', 'HFQ-M452F', 'HFQ-M562F',
+  'HFQ-M692F', 'HFQ-M902F', 'HFQ-462XF', 'HFQ-682XF',
+  'HFQ-M202F', 'HFQ-M212F', 'HFQ-M302F',
+];
 
 // Закончания моделей и их типы систем
 const SYSTEM_MODEL_ENDINGS = {
@@ -33,4 +51,5 @@ module.exports = {
   REFNET_MODEL_TRANSFORMATIONS,
   SYSTEM_MODEL_ENDINGS,
   FORBIDDEN_PREFIXES,
+  MODELS_WITH_QUANTITY_MULTIPLICATION,
 };

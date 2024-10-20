@@ -21,12 +21,22 @@ function formatSystemName(originalName) {
 // Вспомогательная функция для формирования названия системы
 const getSystemNameWithModelType = (systemName, models) => {
   let newName = systemName;
+  const addedEndings = new Set(); // Множество для хранения уже добавленных окончаний
 
-  const hasModelEnding = (ending) => models.some(({ model }) => model.endsWith(ending));
+  // Функция для проверки, нужно ли игнорировать модель
+  // (Cодержащие "AVD", т.к. маркировка AVD и наружных блоков H серии содержит HJFH)
+  const shouldIgnoreModel = (model) => model.startsWith('AVD');
 
+  // Используем forEach для итерации по каждому окончанию
   Object.keys(SYSTEM_MODEL_ENDINGS).forEach((ending) => {
-    if (hasModelEnding(ending)) {
+    // Проверяем, есть ли модель с данным окончанием и она не должна быть проигнорирована
+    const foundModel = models.find(({ model }) =>
+      model.endsWith(ending) && !shouldIgnoreModel(model));
+
+    // Если нашли подходящую модель и окончание ещё не добавлено
+    if (foundModel && !addedEndings.has(ending)) {
       newName += ` ${SYSTEM_MODEL_ENDINGS[ending]}`;
+      addedEndings.add(ending); // Добавляем окончание в множество, чтобы не дублировать
     }
   });
 
