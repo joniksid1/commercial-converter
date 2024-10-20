@@ -50,7 +50,7 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
             { text: `${updatedSystemName}`, font: { name: 'Arial', size: 11, bold: true } },
           ],
         };
-        worksheet.getRow(currentRow).height = 47;
+        worksheet.getRow(currentRow).height = 46;
       };
 
       addHeader();
