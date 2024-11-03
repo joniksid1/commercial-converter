@@ -17,6 +17,7 @@ async function extractModelsFromExcel(fileBuffer) {
 
   workbook.eachSheet((worksheet) => {
     const models = [];
+    let currentGroup = ''; // Переменная для текущей подгруппы
 
     worksheet.eachRow((row) => {
       const modelCell = row.getCell(1); // Столбец A (1)
@@ -32,12 +33,21 @@ async function extractModelsFromExcel(fileBuffer) {
       const modelValue = modelCell.value ? modelCell.value.toString() : '';
       const quantityValue = quantityCell.value ? quantityCell.value.toString() : 'N/A'; // Если пусто, то 'N/A'
 
+      // Если строка явно задаёт новую подгруппу, обновляем текущую подгруппу
+      if (modelValue && modelValue.startsWith('Группа')) { // Условие для распознавания подгрупп
+        currentGroup = modelValue;
+      }
+
       if (modelValue) {
         const matches = modelValue.match(FIND_MODELS_REGEX);
         if (matches) {
           matches.forEach((match) => {
             if (!isForbiddenModel(match)) {
               let finalQuantity = quantityValue;
+
+              if (match.endsWith('FKFW')) {
+                match += '1';
+              }
 
               // Проверка на умножение количества
               if (shouldMultiplyQuantity(match)) {
@@ -47,6 +57,7 @@ async function extractModelsFromExcel(fileBuffer) {
               models.push({
                 model: match,
                 quantity: finalQuantity,
+                group: currentGroup, // Сохраняем подгруппу для модели
               });
             }
           });

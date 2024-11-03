@@ -45,18 +45,38 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         cellA.alignment = { vertical: 'middle', horizontal: 'center' };
         cellA.font = { name: 'Arial', size: 11, bold: true };
 
+        const systemNamePart = systemName;
+        const remainingPart = updatedSystemName.replace(systemName, '');
+
+        // Формируем richText с разными цветами для частей текста
         worksheet.getCell(`B${currentRow}`).value = {
           richText: [
-            { text: `${updatedSystemName}`, font: { name: 'Arial', size: 11, bold: true } },
+            {
+              text: systemNamePart,
+              font: {
+                name: 'Arial', size: 11, bold: true, color: { argb: '800000' },
+              }, // Бордовый для systemName
+            },
+            {
+              text: remainingPart,
+              font:
+              {
+                name: 'Arial', size: 11, bold: true, color: { argb: '000000' },
+              }, // Черный для остального текста
+            },
           ],
         };
+
         worksheet.getRow(currentRow).height = 46;
       };
 
       addHeader();
 
+      // Сортируем модели по имени
+      const sortedModels = models.sort((a, b) => a.model.localeCompare(b.model));
+
       // Добавление моделей системы
-      models.forEach((modelData) => {
+      sortedModels.forEach((modelData) => {
         const { model, quantity, priceData } = modelData;
 
         // Если данных о модели нет, выводим сообщение с количеством

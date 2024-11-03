@@ -20,13 +20,16 @@ const REFNET_MODEL_TRANSFORMATIONS = {
   'HFQ-M202F': 'ML-01S',
   'HFQ-M212F': 'ML-01S',
   'HFQ-M302F': 'ML-01S',
+  'HFQ-M462XF': 'ML-01S',
+  'HFQ-M682XF': 'ML-01S',
 };
 
 // Определение моделей, которые требуют удвоения количества
 const MODELS_WITH_QUANTITY_MULTIPLICATION = [
   'HFQ-M142F', 'HFQ-M282F', 'HFQ-M452F', 'HFQ-M562F',
   'HFQ-M692F', 'HFQ-M902F', 'HFQ-462XF', 'HFQ-682XF',
-  'HFQ-M202F', 'HFQ-M212F', 'HFQ-M302F',
+  'HFQ-M202F', 'HFQ-M212F', 'HFQ-M302F', 'HFQ-M462XF',
+  'HFQ-M682XF',
 ];
 
 // Закончания моделей и их типы систем
@@ -44,7 +47,7 @@ const SYSTEM_MODEL_ENDINGS = {
 
 // Определение ненужных моделей
 const FORBIDDEN_PREFIXES = [
-  'HP-D', 'HP-C', 'HP-G', 'HPE-D', 'AHU', 'RCYR-Z01H', 'RCYR-T03H', 'RCPE-D', 'RCPE-G', 'RCP-DC', 'RCP-CC',
+  'HP-C', 'HP-D', 'HP-E', 'HP-F', 'HP-G', 'HPE-D', 'AHU', 'RCYR-Z01H', 'RCYR-T03H', 'RCPE-D', 'RCPE-G', 'RCP-DC', 'RCP-CC',
 ];
 
 module.exports = {
