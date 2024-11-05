@@ -20,22 +20,17 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
 
     const worksheet = workbook.getWorksheet('ТКП');
 
-    // Группируем системы по названию системы, игнорируем 'total'
+    // Фильтруем системы, исключая 'total', но не меняем порядок групп
     const groupedSystems = priceSystemsData.filter((system) => system.systemName !== 'total');
 
-    // Начало вставки данных
     let currentRow = 24;
 
-    // Итерируем по системам и вставляем данные
     groupedSystems.forEach((systemData) => {
       const { systemName, models } = systemData;
-
       groupNumber += 1;
 
-      // Генерируем новое название системы
       const updatedSystemName = getSystemNameWithModelType(systemName, models);
 
-      // Добавление заголовка системы
       const addHeader = () => {
         currentRow += 2;
         worksheet.mergeCells(`B${currentRow}:E${currentRow}`);
@@ -48,21 +43,20 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         const systemNamePart = systemName;
         const remainingPart = updatedSystemName.replace(systemName, '');
 
-        // Формируем richText с разными цветами для частей текста
         worksheet.getCell(`B${currentRow}`).value = {
           richText: [
             {
               text: systemNamePart,
               font: {
                 name: 'Arial', size: 11, bold: true, color: { argb: '800000' },
-              }, // Бордовый для systemName
+              },
             },
             {
               text: remainingPart,
               font:
               {
                 name: 'Arial', size: 11, bold: true, color: { argb: '000000' },
-              }, // Черный для остального текста
+              },
             },
           ],
         };
@@ -72,14 +66,36 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
 
       addHeader();
 
-      // Сортируем модели по имени
-      const sortedModels = models.sort((a, b) => a.model.localeCompare(b.model));
+      // Сортировка моделей внутри группы по числовым частям в имени модели
+      const groupedModels = models.reduce((acc, modelData) => {
+        const { model } = modelData;
+        const prefix = model.split('-')[0]; // Извлекаем префикс, например, "AVC"
 
-      // Добавление моделей системы
+        if (!acc[prefix]) acc[prefix] = [];
+        acc[prefix].push(modelData); // Группируем модели по префиксам
+
+        return acc;
+      }, {});
+
+      // Сортируем модели в каждой группе по числовым частям
+      const sortedModels = Object.values(groupedModels).flatMap((group) => group.sort((a, b) => {
+        const modelA = a.model;
+        const modelB = b.model;
+
+        // Извлекаем числовую часть модели с помощью регулярного выражения
+        const numberA = parseInt(modelA.replace(/\D/g, ''), 10);
+        const numberB = parseInt(modelB.replace(/\D/g, ''), 10);
+
+        // Сравниваем числовые части
+        return numberA - numberB;
+      }));
+
+      console.log(`Модели для группы "${systemName}" после сортировки:`, sortedModels.map((model) => model.model));
+
+      // Вставка моделей системы
       sortedModels.forEach((modelData) => {
         const { model, quantity, priceData } = modelData;
 
-        // Если данных о модели нет, выводим сообщение с количеством
         if (!priceData) {
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
           worksheet.getCell(`B${currentRow + 1}`).value = `Данные о модели "${model}" не найдены. Количество: ${quantity}`;
@@ -93,19 +109,17 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         const { ModelTKP, Price } = priceData;
 
         const formatText = (text, modelName) => {
-          const regex = new RegExp(`(${modelName})`, 'gi'); // Регулярное выражение для поиска маркировки
+          const regex = new RegExp(`(${modelName})`, 'gi');
 
           const formattedText = [];
           let lastIndex = 0;
           let match;
 
-          // Проходим по тексту и ищем все совпадения с моделью
           while ((match = regex.exec(text)) !== null) {
             const beforeMatch = text.substring(lastIndex, match.index);
             const matchedText = match[0];
             lastIndex = regex.lastIndex;
 
-            // Добавляем текст до совпадения
             if (beforeMatch) {
               formattedText.push({
                 text: beforeMatch,
@@ -113,14 +127,12 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
               });
             }
 
-            // Добавляем само совпадение жирным
             formattedText.push({
               text: matchedText,
               font: { name: 'Arial', size: 11, bold: true },
             });
           }
 
-          // Добавляем оставшийся текст после последнего совпадения
           const afterMatch = text.substring(lastIndex);
           if (afterMatch) {
             formattedText.push({
@@ -132,7 +144,6 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
           return { richText: formattedText };
         };
 
-        // Форматируем текст с выделением маркировки
         const formattedText = formatText(ModelTKP, model);
 
         worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
@@ -157,38 +168,28 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
           worksheet.getCell(`${column}${currentRow + 1}`).alignment = { vertical: 'middle', horizontal: 'center' };
         });
 
-        // Настраиваем выравнивание для ячеек
-        ['H', 'I', 'M', 'Q'].forEach((column) => {
-          worksheet.getCell(`${column}${currentRow + 1}`).alignment = { vertical: 'middle', horizontal: 'center' };
-        });
-
         worksheet.getCell(`B${currentRow}`).alignment = { vertical: 'middle', wrapText: true };
 
-        // Устанавливаем высоту строки в зависимости от модели
         if (AVC_AVBC_REGEX.test(model)) {
           worksheet.getRow(currentRow + 1).height = 52;
         } else if (MODELS_REGEX.test(model)) {
           worksheet.getRow(currentRow + 1).height = 39;
         } else {
-          // Оставляем стандартную высоту строки
           worksheet.getRow(currentRow + 1).height = 23;
         }
         currentRow += 1;
       });
     });
 
-    // Генерация уникального имени файла
     const generateUniqueFileName = () => {
       const timestamp = new Date().getTime();
       const randomBytes = crypto.randomBytes(16).toString('hex');
       return `newDataSheet_${timestamp}_${randomBytes}.xlsx`;
     };
 
-    // Сохранение результата
     outputPath = path.join(__dirname, `../uploads/${generateUniqueFileName()}`);
     await workbook.xlsx.writeFile(outputPath);
 
-    // Чтение содержимого файла в бинарном формате
     const fileContent = await fs.readFile(outputPath, 'binary');
 
     return fileContent;

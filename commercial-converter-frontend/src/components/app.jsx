@@ -71,13 +71,13 @@ function FileUploadForm() {
       formData.append('file', file);
 
       // Для локального теста
-      // const response = await axios.post('http://localhost:3000/api/convert', formData, {
-      //   responseType: 'blob',
-      // });
-
-      const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
+      const response = await axios.post('http://localhost:3000/api/convert', formData, {
         responseType: 'blob',
       });
+
+      // const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
+      //   responseType: 'blob',
+      // });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
