@@ -70,22 +70,24 @@ function FileUploadForm() {
       const formData = new FormData();
       formData.append('file', file);
 
-      // Для локального теста
-      const response = await axios.post('http://localhost:3000/api/convert', formData, {
+      // const response = await axios.post('http://localhost:3000/api/convert', formData, {
+      //   responseType: 'blob',
+      // });
+
+      const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
         responseType: 'blob',
       });
 
-      // const response = await axios.post('http://192.168.97.110:8080/api/convert', formData, {
-      //   responseType: 'blob',
-      // });
+      // Используем исходное имя загружаемого файла
+      const downloadFileName = fileName.replace(/\.[^/.]+$/, '') + '.xlsx';
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'downloaded_file.xlsx');
+      link.setAttribute('download', downloadFileName);
       document.body.appendChild(link);
       link.click();
-
+      link.remove();
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

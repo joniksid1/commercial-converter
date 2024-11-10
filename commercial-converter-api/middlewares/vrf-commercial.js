@@ -90,8 +90,6 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         return numberA - numberB;
       }));
 
-      console.log(`Модели для группы "${systemName}" после сортировки:`, sortedModels.map((model) => model.model));
-
       // Вставка моделей системы
       sortedModels.forEach((modelData) => {
         const { model, quantity, priceData } = modelData;

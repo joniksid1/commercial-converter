@@ -62,7 +62,12 @@ module.exports.pdfToXLSX = async (req, res, next) => {
       const transormedSystemsData = transformAndCombineJoints(systemsData);
 
       // Вызываем функцию для создания заполненного файла Excel
-      const commercial = await getVrfCommercial(req, res, next, transormedSystemsData);
+      const commercial = await getVrfCommercial(
+        req,
+        res,
+        next,
+        transormedSystemsData,
+      );
 
       // Генерируем и отправляем XLSX файл обратно клиенту
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
