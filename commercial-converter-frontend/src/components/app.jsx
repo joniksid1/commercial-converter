@@ -79,7 +79,7 @@ function FileUploadForm() {
       });
 
       // Используем исходное имя загружаемого файла
-      const downloadFileName = fileName.replace(/\.[^/.]+$/, '') + '.xlsx';
+      const downloadFileName = 'ТКП ' + fileName.replace(/\.[^/.]+$/, '') + '.xlsx';
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -129,7 +129,7 @@ function FileUploadForm() {
         <label className='form__input-file'>
           <input type="file" name="file" accept=".pdf, .xlsx" onChange={handleFileChange} />
           <span className='form__input-file-btn'>Загрузить PDF / XLSX файл</span>
-          <span className='form__input-file-text'>{fileName ? fileName : 'Максимум 10 МБ'}</span>
+          <span className='form__input-file-text'>{fileName ? fileName : 'Максимум 30 МБ'}</span>
         </label>
         <button className='form__button' type="submit" disabled={!file || isLoading}>
           {isLoading ? 'Загрузка...' : 'Сформировать ТКП в XLSX'}
