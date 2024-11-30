@@ -79,7 +79,7 @@ function FileUploadForm() {
       });
 
       // Используем исходное имя загружаемого файла
-      const downloadFileName = 'ТКП ' + fileName.replace(/\.[^/.]+$/, '') + '.xlsx';
+      const downloadFileName = 'Коммерческое предложение ' + fileName.replace(/\.[^/.]+$/, '') + '.xlsx';
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -140,3 +140,4 @@ function FileUploadForm() {
 }
 
 export default FileUploadForm;
+``
