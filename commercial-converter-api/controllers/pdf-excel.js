@@ -14,7 +14,7 @@ const { transformAndCombineJoints } = require('../utils/transform-and-combine-jo
 module.exports.pdfToXLSX = async (req, res, next) => {
   try {
     const fileData = req.files.file.data;
-    const fileName = req.files.file.name;
+    const fileName = req.files.file.name.toLowerCase();
     if (fileName.endsWith('.pdf')) {
       // Извлекаем текст из PDF
       const extractedText = await extractTextFromPDF(fileData);

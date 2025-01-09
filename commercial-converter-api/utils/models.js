@@ -10,9 +10,9 @@ const REFNET_MODEL_TRANSFORMATIONS = {
   'HFQ-M462F': 'ML-01S',
   'HFQ-M682F': 'ML-01S',
   'HFQ-M142F': 'Y-1SL',
-  'HFQ-M282F': 'Y-1SL',
+  'HFQ-M282F': 'Y-2SL',
   'HFQ-M452F': 'Y-2SL',
-  'HFQ-M562F': 'Y-2SL',
+  'HFQ-M562F': 'Y-3SL', // +1 Y-2SL вместо 2 шт. Y-3SL - изменяется как особый случай в функции transformAndCombineJoints
   'HFQ-M692F': 'Y-3SL',
   'HFQ-M902F': 'Y-3SL',
   'HFQ-462XF': 'Y-4S',
