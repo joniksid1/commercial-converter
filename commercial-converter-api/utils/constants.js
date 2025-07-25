@@ -32,6 +32,16 @@ const MODELS_REGEX = /^AVS|HZX|AVY|AVL|AVD|AVE|AVV|AVK|RCZX|RCS|RCC|RCBC|RCY|RCL
 // Выражения для поиска моделей в EXCEL спецификации
 const FIND_MODELS_REGEX = /[A-Z]{2,}-[A-Za-z0-9]*/g;
 
+// Список моделей, которые требуют специального форматирования в ТКП
+const ACCESSORY_MODELS = [
+  'HYRE-X01H',
+  'HYE-VD01',
+  'HYXE-VA01A',
+  'RCYR-X01H',
+  'RCY-W01',
+  'RCYW-M01H',
+];
+
 module.exports = {
   SYSTEM_PREFIX_REGEX,
   SYSTEM_VOLUME_PRESSURE_REGEX,
@@ -45,4 +55,5 @@ module.exports = {
   AVC_AVBC_REGEX,
   MODELS_REGEX,
   FIND_MODELS_REGEX,
+  ACCESSORY_MODELS,
 };

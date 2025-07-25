@@ -59,6 +59,50 @@ async function extractModelsFromExcel(fileBuffer) {
                 quantity: finalQuantity,
                 group: currentGroup, // Сохраняем подгруппу для модели
               });
+
+              // --- ДОБАВЛЕНИЕ ПУЛЬТОВ К КАССЕТНЫМ И КАНАЛЬНЫМ БЛОКАМ ---
+              const prefix = match.substring(0, 3);
+              const controllerMap = {
+                // Hisense
+                AVY: { irReceiver: 'HYRE-X01H', irController: 'HYE-VD01', wallController: 'HYXE-VA01A' },
+                AVL: { irReceiver: 'HYRE-V02H', irController: 'HYE-VD01', wallController: 'HYXE-VA01A' },
+                AVH: { irReceiver: 'HYRE-V02H', irController: 'HYE-VD01', wallController: 'HYXE-VA01A' },
+
+                // Royal Clima
+                RCY: { irReceiver: 'RCYR-X01H', irController: 'RCY-W01', wallController: 'RCYW-M01H' },
+                RCL: { irReceiver: 'RCYR-V02H', irController: 'RCY-W01', wallController: 'RCYW-M01H' },
+                RCH: { irReceiver: 'RCYR-V02H', irController: 'RCY-W01', wallController: 'RCYW-M01H' },
+              };
+
+              if (controllerMap[prefix]) {
+                const baseQuantity = parseInt(finalQuantity, 10);
+                const { irController, wallController, irReceiver } = controllerMap[prefix];
+
+                // Вариант 1: ИК пульт + приёмник
+                models.push({
+                  model: irController,
+                  quantity: baseQuantity,
+                  group: currentGroup,
+                  isAccessory: true,
+                  note: 'выберите вариант пульта (ИК + приёмник)',
+                });
+                models.push({
+                  model: irReceiver,
+                  quantity: baseQuantity,
+                  group: currentGroup,
+                  isAccessory: true,
+                  note: 'выберите вариант пульта (ИК + приёмник)',
+                });
+
+                // Вариант 2: Настенный пульт
+                models.push({
+                  model: wallController,
+                  quantity: baseQuantity,
+                  group: currentGroup,
+                  isAccessory: true,
+                  note: 'выберите вариант пульта (настенный)',
+                });
+              }
             }
           });
         }

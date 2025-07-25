@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const crypto = require('crypto');
 const { fetchDataQueries } = require('../utils/database-query-service');
 const { getSystemNameWithModelType } = require('../utils/format-system-name');
-const { AVC_AVBC_REGEX, MODELS_REGEX } = require('../utils/constants');
+const { AVC_AVBC_REGEX, MODELS_REGEX, ACCESSORY_MODELS} = require('../utils/constants');
 
 module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
   const templatePath = path.join(__dirname, '../template/commercial-offer.xlsx');
@@ -90,9 +90,13 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
         return numberA - numberB;
       }));
 
+      let accessoryNoteAdded = false;
+
       // Вставка моделей системы
       sortedModels.forEach((modelData) => {
         const { model, quantity, priceData } = modelData;
+        const isCustomAccessory = ACCESSORY_MODELS.includes(model);
+        const currentModelDataRow = currentRow + 1;
 
         if (!priceData) {
           worksheet.mergeCells(`B${currentRow + 1}:E${currentRow + 1}`);
@@ -104,11 +108,21 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
           return;
         }
 
+        if (isCustomAccessory && !accessoryNoteAdded) {
+          worksheet.getCell(`B${currentModelDataRow}`).value = '(Выберите пульт управления для однопоточных, двухпоточных кассетных и/или канальных блоков скрытого монтажа.)';
+          worksheet.mergeCells(`B${currentModelDataRow}:E${currentModelDataRow}`);
+          accessoryNoteAdded = true;
+          worksheet.getRow(currentModelDataRow).height = 30;
+          worksheet.getCell(`B${currentModelDataRow}`).font = {
+            name: 'Arial', size: 10, italic: true, color: { argb: 'FFFF0000' },
+          };
+          currentRow += 1;
+        }
+
         const { ModelTKP, Price } = priceData;
 
         const formatText = (text, modelName) => {
           const regex = new RegExp(`(${modelName})`, 'gi');
-
           const formattedText = [];
           let lastIndex = 0;
           let match;
@@ -138,7 +152,6 @@ module.exports.getVrfCommercial = async (req, res, next, systemsData) => {
               font: { name: 'Arial', size: 11, bold: false },
             });
           }
-
           return { richText: formattedText };
         };
 
